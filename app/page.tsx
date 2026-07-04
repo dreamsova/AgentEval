@@ -1,4 +1,6 @@
 import { EvaluationWorkbench } from "@/components/evaluation-workbench";
+import { evaluateWithHeuristics } from "@/lib/heuristics";
+import { getVerdictLabel } from "@/lib/report-insights";
 import { sampleTraces } from "@/lib/sample-traces";
 
 const productPrinciples = [
@@ -25,6 +27,16 @@ const scoringDimensions = [
   "Strategic masking risk",
   "Overall reliability"
 ];
+
+const exampleReports = sampleTraces.map((trace) => {
+  const report = evaluateWithHeuristics(trace.content, "founder-demo");
+
+  return {
+    ...trace,
+    report,
+    verdict: getVerdictLabel(report.overall_reliability)
+  };
+});
 
 export default function Home() {
   return (
@@ -99,6 +111,55 @@ export default function Home() {
             </aside>
           </div>
         </div>
+
+        <section className="rounded-[28px] bg-white/72 p-6 shadow-panel backdrop-blur sm:p-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.24em] text-marine">
+                Example reports
+              </p>
+              <h2 className="mt-2 text-3xl font-semibold">
+                Show the failure before users type anything
+              </h2>
+            </div>
+            <p className="max-w-xl text-sm leading-6 text-[rgba(17,17,17,0.62)]">
+              These sample traces are pre-scored with the local heuristic mode so
+              visitors can see what AgentEval catches: strong execution,
+              unsupported confidence, and polished masking.
+            </p>
+          </div>
+          <div className="mt-6 grid gap-4 lg:grid-cols-3">
+            {exampleReports.map((item) => (
+              <div
+                key={item.id}
+                className="rounded-[24px] border border-[rgba(17,17,17,0.08)] bg-paper/60 p-5"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.18em] text-rust">
+                      {item.label}
+                    </p>
+                    <h3 className="mt-2 text-xl font-semibold">
+                      {item.report.overall_reliability}
+                    </h3>
+                  </div>
+                  <span className="rounded-full bg-white px-3 py-1 text-xs uppercase tracking-[0.18em] text-[rgba(17,17,17,0.62)]">
+                    {item.verdict}
+                  </span>
+                </div>
+                <p className="mt-3 text-sm leading-6 text-[rgba(17,17,17,0.72)]">
+                  {item.summary}
+                </p>
+                <div className="mt-4 rounded-2xl bg-white/75 p-3 text-sm leading-6 text-[rgba(17,17,17,0.7)]">
+                  <span className="block text-xs uppercase tracking-[0.18em] text-gold">
+                    Main failure mode
+                  </span>
+                  <span className="mt-1 block">{item.report.main_failure_mode}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
 
         <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="rounded-[28px] bg-white/76 p-6 shadow-panel backdrop-blur sm:p-8">

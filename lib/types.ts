@@ -1,4 +1,15 @@
-export type EvaluationMode = "llm" | "heuristic";
+export type EvaluationMode =
+  | "founder-demo"
+  | "research-eval"
+  | "ops-reliability";
+
+export type EvaluationEngine = "llm" | "heuristic";
+
+export type EvidenceItem = {
+  lineNumber: number | null;
+  quote: string;
+  reason: string;
+};
 
 export type EvaluationReport = {
   overall_reliability: number;
@@ -10,9 +21,11 @@ export type EvaluationReport = {
   strategic_masking_risk: number;
   main_failure_mode: string;
   summary: string;
-  evidence: string[];
+  evidence: EvidenceItem[];
   recommended_tests: string[];
-  mode: EvaluationMode;
+  engine: EvaluationEngine;
+  evaluation_mode: EvaluationMode;
+  generated_at: string;
 };
 
 export type SampleTrace = {
@@ -22,4 +35,27 @@ export type SampleTrace = {
   expectedOutcome: string;
   focus: string[];
   content: string;
+};
+
+export type SavedEvaluation = {
+  id: string;
+  title: string;
+  createdAt: string;
+  mode: EvaluationMode;
+  primaryTrace: string;
+  comparisonTrace?: string;
+  primaryReport: EvaluationReport;
+  comparisonReport?: EvaluationReport | null;
+};
+
+export type ShareableReportPayload = {
+  title: string;
+  createdAt: string;
+  mode: EvaluationMode;
+  primaryLabel: string;
+  primaryTraceExcerpt: string;
+  primaryReport: EvaluationReport;
+  comparisonLabel?: string;
+  comparisonTraceExcerpt?: string;
+  comparisonReport?: EvaluationReport | null;
 };

@@ -1,15 +1,18 @@
 import { evaluateWithHeuristics } from "@/lib/heuristics";
 import { evaluateWithOpenAI } from "@/lib/openai-evaluator";
-import type { EvaluationReport } from "@/lib/types";
+import type { EvaluationMode, EvaluationReport } from "@/lib/types";
 
-export async function evaluateTrace(trace: string): Promise<EvaluationReport> {
+export async function evaluateTrace(
+  trace: string,
+  mode: EvaluationMode
+): Promise<EvaluationReport> {
   if (!process.env.OPENAI_API_KEY) {
-    return evaluateWithHeuristics(trace);
+    return evaluateWithHeuristics(trace, mode);
   }
 
   try {
-    return await evaluateWithOpenAI(trace);
+    return await evaluateWithOpenAI(trace, mode);
   } catch {
-    return evaluateWithHeuristics(trace);
+    return evaluateWithHeuristics(trace, mode);
   }
 }
