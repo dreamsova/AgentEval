@@ -58,6 +58,10 @@ The repository now includes a working `Next.js + Tailwind` MVP with:
 - a server-side `/api/evaluate` route
 - an OpenAI-powered evaluator when `OPENAI_API_KEY` is set
 - a heuristic fallback mode so the demo still works locally without a key
+- evaluation modes for founder demo, research eval, and ops reliability
+- compare mode for side-by-side trace scoring
+- local saved evaluations and shareable report pages
+- import support for `.txt`, `.md`, and `.json` traces
 
 ## Run Locally
 

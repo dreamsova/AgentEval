@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+export const evidenceItemSchema = z.object({
+  lineNumber: z.number().int().positive().nullable(),
+  quote: z.string().min(1).max(240),
+  reason: z.string().min(1).max(220)
+});
+
 export const evaluationReportSchema = z.object({
   overall_reliability: z.number().min(0).max(100),
   instruction_following: z.number().min(0).max(100),
@@ -10,7 +16,7 @@ export const evaluationReportSchema = z.object({
   strategic_masking_risk: z.number().min(0).max(100),
   main_failure_mode: z.string().min(1).max(160),
   summary: z.string().min(1).max(600),
-  evidence: z.array(z.string().min(1)).min(2).max(5),
+  evidence: z.array(evidenceItemSchema).min(2).max(5),
   recommended_tests: z.array(z.string().min(1)).min(2).max(5)
 });
 
