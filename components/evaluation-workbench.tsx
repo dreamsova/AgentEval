@@ -22,6 +22,7 @@ import type {
 
 type EvaluationWorkbenchProps = {
   sampleTraces: SampleTrace[];
+  compact?: boolean;
 };
 
 const STORAGE_KEY = "agenteval.saved-evaluations";
@@ -131,17 +132,28 @@ function persistSavedEvaluations(items: SavedEvaluation[]) {
 }
 
 export function EvaluationWorkbench({
-  sampleTraces
+  sampleTraces,
+  compact = false
 }: EvaluationWorkbenchProps) {
-  const [primaryTrace, setPrimaryTrace] = useState(sampleTraces[0]?.content ?? "");
+  const defaultPrimarySample =
+    sampleTraces.find((sample) => sample.id === "strategic-masker") ??
+    sampleTraces[0] ??
+    null;
+  const defaultComparisonSample =
+    sampleTraces.find((sample) => sample.id === "reliable-ops") ??
+    sampleTraces[1] ??
+    sampleTraces[0] ??
+    null;
+
+  const [primaryTrace, setPrimaryTrace] = useState(defaultPrimarySample?.content ?? "");
   const [primarySelectedId, setPrimarySelectedId] = useState(
-    sampleTraces[0]?.id ?? ""
+    defaultPrimarySample?.id ?? ""
   );
   const [comparisonTrace, setComparisonTrace] = useState(
-    sampleTraces[2]?.content ?? ""
+    defaultComparisonSample?.content ?? ""
   );
   const [comparisonSelectedId, setComparisonSelectedId] = useState(
-    sampleTraces[2]?.id ?? ""
+    defaultComparisonSample?.id ?? ""
   );
   const [compareMode, setCompareMode] = useState(false);
   const [evaluationMode, setEvaluationMode] =
@@ -351,45 +363,97 @@ export function EvaluationWorkbench({
   }
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-[24px] border border-[rgba(17,17,17,0.08)] bg-white/72 p-4">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-2xl">
-            <p className="text-xs uppercase tracking-[0.18em] text-marine">
-              Evaluation mode
-            </p>
-            <h3 className="mt-2 text-lg font-semibold">{modeCopy.label}</h3>
-            <p className="mt-2 text-sm leading-6 text-[rgba(17,17,17,0.68)]">
+    <div className="space-y-5">
+      {compact ? (
+        <div className="rounded-[24px] border border-[rgba(17,17,17,0.08)] bg-white/72 p-4">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <h3 className="mt-2 text-lg font-semibold">
+                Start with a sample trace or paste your own
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-[rgba(17,17,17,0.68)]">
+                AgentEval returns a reliability score, main failure mode, linked
+                evidence, and suggested follow-up tests.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2 text-xs leading-5 text-[rgba(17,17,17,0.55)]">
+              <span className="rounded-full bg-white px-3 py-1">1. Pick a trace</span>
+              <span className="rounded-full bg-white px-3 py-1">2. Evaluate</span>
+              <span className="rounded-full bg-white px-3 py-1">3. Inspect evidence</span>
+            </div>
+          </div>
+          <details className="mt-4 rounded-[20px] border border-[rgba(17,17,17,0.08)] bg-paper/50 p-4">
+            <summary className="cursor-pointer list-none text-sm font-medium">
+              Advanced demo controls
+            </summary>
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <select
+                value={evaluationMode}
+                onChange={(event) =>
+                  setEvaluationMode(event.target.value as EvaluationMode)
+                }
+                className="rounded-full border border-[rgba(17,17,17,0.08)] bg-white px-4 py-3 text-sm outline-none"
+              >
+                {evaluationModes.map((mode) => (
+                  <option key={mode.id} value={mode.id}>
+                    {mode.label}
+                  </option>
+                ))}
+              </select>
+              <label className="flex items-center gap-3 rounded-full border border-[rgba(17,17,17,0.08)] bg-white px-4 py-3 text-sm">
+                <input
+                  type="checkbox"
+                  checked={compareMode}
+                  onChange={(event) => setCompareMode(event.target.checked)}
+                />
+                Compare two traces
+              </label>
+            </div>
+            <p className="mt-3 text-sm leading-6 text-[rgba(17,17,17,0.62)]">
               {modeCopy.summary}
             </p>
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <select
-              value={evaluationMode}
-              onChange={(event) =>
-                setEvaluationMode(event.target.value as EvaluationMode)
-              }
-              className="rounded-full border border-[rgba(17,17,17,0.08)] bg-white px-4 py-3 text-sm outline-none"
-            >
-              {evaluationModes.map((mode) => (
-                <option key={mode.id} value={mode.id}>
-                  {mode.label}
-                </option>
-              ))}
-            </select>
-            <label className="flex items-center gap-3 rounded-full border border-[rgba(17,17,17,0.08)] bg-white px-4 py-3 text-sm">
-              <input
-                type="checkbox"
-                checked={compareMode}
-                onChange={(event) => setCompareMode(event.target.checked)}
-              />
-              Compare two traces
-            </label>
+          </details>
+        </div>
+      ) : (
+        <div className="rounded-[24px] border border-[rgba(17,17,17,0.08)] bg-white/72 p-4">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-xs uppercase tracking-[0.18em] text-marine">
+                Evaluation mode
+              </p>
+              <h3 className="mt-2 text-lg font-semibold">{modeCopy.label}</h3>
+              <p className="mt-2 text-sm leading-6 text-[rgba(17,17,17,0.68)]">
+                {modeCopy.summary}
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <select
+                value={evaluationMode}
+                onChange={(event) =>
+                  setEvaluationMode(event.target.value as EvaluationMode)
+                }
+                className="rounded-full border border-[rgba(17,17,17,0.08)] bg-white px-4 py-3 text-sm outline-none"
+              >
+                {evaluationModes.map((mode) => (
+                  <option key={mode.id} value={mode.id}>
+                    {mode.label}
+                  </option>
+                ))}
+              </select>
+              <label className="flex items-center gap-3 rounded-full border border-[rgba(17,17,17,0.08)] bg-white px-4 py-3 text-sm">
+                <input
+                  type="checkbox"
+                  checked={compareMode}
+                  onChange={(event) => setCompareMode(event.target.checked)}
+                />
+                Compare two traces
+              </label>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      <div className="grid gap-5 xl:grid-cols-2">
+      <div className={`grid gap-5 ${compareMode ? "xl:grid-cols-2" : ""}`}>
         <TraceEditor
           title="Primary trace"
           trace={primaryTrace}
@@ -401,6 +465,7 @@ export function EvaluationWorkbench({
           onFileImport={handleFileImport}
           target="primary"
           stats={primaryTraceStats}
+          compact={compact}
         />
 
         {compareMode ? (
@@ -415,27 +480,36 @@ export function EvaluationWorkbench({
             onFileImport={handleFileImport}
             target="comparison"
             stats={comparisonTraceStats}
+            compact={compact}
           />
-        ) : (
+        ) : !compact ? (
           <div className="rounded-[26px] border border-dashed border-[rgba(17,17,17,0.12)] bg-paper/45 p-5 text-sm leading-6 text-[rgba(17,17,17,0.58)]">
             Turn on compare mode to score two traces side by side. This is
             especially useful for showing the difference between a reliable
             agent and one that sounds polished while quietly failing.
           </div>
-        )}
+        ) : null}
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap gap-2 text-xs leading-5 text-[rgba(17,17,17,0.55)]">
           <span className="rounded-full bg-white px-3 py-1">
-            Upload `.txt`, `.md`, or `.json` traces
+            Upload `.txt`, `.md`, or `.json`
           </span>
-          <span className="rounded-full bg-white px-3 py-1">
-            Save evaluations locally
-          </span>
-          <span className="rounded-full bg-white px-3 py-1">
-            Share report pages without exposing an API key
-          </span>
+          {compact ? (
+            <span className="rounded-full bg-white px-3 py-1">
+              Server-side evaluation with shareable output
+            </span>
+          ) : (
+            <>
+              <span className="rounded-full bg-white px-3 py-1">
+                Save evaluations locally
+              </span>
+              <span className="rounded-full bg-white px-3 py-1">
+                Share report pages without exposing an API key
+              </span>
+            </>
+          )}
         </div>
         <button
           type="button"
@@ -504,22 +578,26 @@ export function EvaluationWorkbench({
             subtitle="Report"
             actions={
               <>
-                <button
-                  type="button"
-                  onClick={() => {
-                    void copyCurrentReportJson();
-                  }}
-                  className="rounded-full border border-[rgba(17,17,17,0.08)] bg-white px-4 py-2 text-xs uppercase tracking-[0.18em] text-ink transition hover:border-marine/40"
-                >
-                  {copiedJson ? "Copied JSON" : "Copy report JSON"}
-                </button>
-                <button
-                  type="button"
-                  onClick={saveCurrentEvaluation}
-                  className="rounded-full border border-[rgba(17,17,17,0.08)] bg-white px-4 py-2 text-xs uppercase tracking-[0.18em] text-ink transition hover:border-marine/40"
-                >
-                  Save evaluation
-                </button>
+                {!compact ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      void copyCurrentReportJson();
+                    }}
+                    className="rounded-full border border-[rgba(17,17,17,0.08)] bg-white px-4 py-2 text-xs uppercase tracking-[0.18em] text-ink transition hover:border-marine/40"
+                  >
+                    {copiedJson ? "Copied JSON" : "Copy report JSON"}
+                  </button>
+                ) : null}
+                {!compact ? (
+                  <button
+                    type="button"
+                    onClick={saveCurrentEvaluation}
+                    className="rounded-full border border-[rgba(17,17,17,0.08)] bg-white px-4 py-2 text-xs uppercase tracking-[0.18em] text-ink transition hover:border-marine/40"
+                  >
+                    Save evaluation
+                  </button>
+                ) : null}
                 <button
                   type="button"
                   onClick={() => {
@@ -543,69 +621,71 @@ export function EvaluationWorkbench({
         </div>
       ) : (
         <div className="rounded-[26px] border border-dashed border-[rgba(17,17,17,0.12)] bg-paper/45 p-5 text-sm leading-6 text-[rgba(17,17,17,0.58)]">
-          Run an evaluation to see a structured report, save a snapshot, compare
-          two traces, or generate a shareable report page.
+          Use the strategic masker sample above or paste your own trace to see
+          where language and behavior diverge.
         </div>
       )}
 
-      <div className="rounded-[26px] border border-[rgba(17,17,17,0.08)] bg-white/82 p-5 shadow-panel">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.18em] text-rust">
-              Saved evaluations
+      {compact ? null : (
+        <div className="rounded-[26px] border border-[rgba(17,17,17,0.08)] bg-white/82 p-5 shadow-panel">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.18em] text-rust">
+                Saved evaluations
+              </p>
+              <h3 className="mt-2 text-2xl font-semibold">Local evaluation history</h3>
+            </div>
+            <p className="max-w-lg text-sm leading-6 text-[rgba(17,17,17,0.62)]">
+              These snapshots stay in your browser, so you can compare demos,
+              revisit example traces, and generate share links without adding a
+              database yet.
             </p>
-            <h3 className="mt-2 text-2xl font-semibold">Local evaluation history</h3>
           </div>
-          <p className="max-w-lg text-sm leading-6 text-[rgba(17,17,17,0.62)]">
-            These snapshots stay in your browser, so you can compare demos,
-            revisit example traces, and generate share links without adding a
-            database yet.
-          </p>
-        </div>
 
-        {savedEvaluations.length > 0 ? (
-          <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {savedEvaluations.map((item) => (
-              <div
-                key={item.id}
-                className="rounded-[22px] border border-[rgba(17,17,17,0.08)] bg-paper/55 p-4"
-              >
-                <p className="text-xs uppercase tracking-[0.18em] text-[rgba(17,17,17,0.45)]">
-                  {new Date(item.createdAt).toLocaleString()}
-                </p>
-                <h4 className="mt-2 text-lg font-semibold">{item.title}</h4>
-                <p className="mt-2 text-sm leading-6 text-[rgba(17,17,17,0.68)]">
-                  {getVerdictLabel(item.primaryReport.overall_reliability)}
-                  {item.comparisonReport ? " • includes comparison trace" : ""}
-                </p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => loadSavedEvaluation(item)}
-                    className="rounded-full border border-[rgba(17,17,17,0.08)] bg-white px-3 py-2 text-xs uppercase tracking-[0.18em]"
-                  >
-                    Load
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      void copyShareLink(item);
-                    }}
-                    className="rounded-full border border-[rgba(17,17,17,0.08)] bg-white px-3 py-2 text-xs uppercase tracking-[0.18em]"
-                  >
-                    Share
-                  </button>
+          {savedEvaluations.length > 0 ? (
+            <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {savedEvaluations.map((item) => (
+                <div
+                  key={item.id}
+                  className="rounded-[22px] border border-[rgba(17,17,17,0.08)] bg-paper/55 p-4"
+                >
+                  <p className="text-xs uppercase tracking-[0.18em] text-[rgba(17,17,17,0.45)]">
+                    {new Date(item.createdAt).toLocaleString()}
+                  </p>
+                  <h4 className="mt-2 text-lg font-semibold">{item.title}</h4>
+                  <p className="mt-2 text-sm leading-6 text-[rgba(17,17,17,0.68)]">
+                    {getVerdictLabel(item.primaryReport.overall_reliability)}
+                    {item.comparisonReport ? " • includes comparison trace" : ""}
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => loadSavedEvaluation(item)}
+                      className="rounded-full border border-[rgba(17,17,17,0.08)] bg-white px-3 py-2 text-xs uppercase tracking-[0.18em]"
+                    >
+                      Load
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void copyShareLink(item);
+                      }}
+                      className="rounded-full border border-[rgba(17,17,17,0.08)] bg-white px-3 py-2 text-xs uppercase tracking-[0.18em]"
+                    >
+                      Share
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="mt-5 rounded-[22px] border border-dashed border-[rgba(17,17,17,0.12)] bg-paper/45 p-4 text-sm leading-6 text-[rgba(17,17,17,0.56)]">
-            No saved evaluations yet. Evaluate a trace and click `Save evaluation`
-            to start building a local regression set.
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-5 rounded-[22px] border border-dashed border-[rgba(17,17,17,0.12)] bg-paper/45 p-4 text-sm leading-6 text-[rgba(17,17,17,0.56)]">
+              No saved evaluations yet. Evaluate a trace and click `Save evaluation`
+              to start building a local regression set.
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -624,6 +704,7 @@ type TraceEditorProps = {
   ) => Promise<void>;
   target: TraceTarget;
   stats: ReturnType<typeof getTraceStats>;
+  compact: boolean;
 };
 
 function TraceEditor({
@@ -636,7 +717,8 @@ function TraceEditor({
   activeSample,
   onFileImport,
   target,
-  stats
+  stats,
+  compact
 }: TraceEditorProps) {
   return (
     <div className="space-y-4">
@@ -685,33 +767,52 @@ function TraceEditor({
 
           {activeSample ? (
             <div className="rounded-[24px] border border-[rgba(17,17,17,0.08)] bg-white/72 p-4">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <div className="max-w-xl">
-                  <p className="text-xs uppercase tracking-[0.18em] text-marine">
-                    Sample context
-                  </p>
-                  <h3 className="mt-2 text-lg font-semibold">{activeSample.label}</h3>
-                  <p className="mt-2 text-sm leading-6 text-[rgba(17,17,17,0.7)]">
-                    {activeSample.summary}
+              {compact ? (
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.18em] text-marine">
+                      Sample context
+                    </p>
+                    <h3 className="mt-2 text-lg font-semibold">{activeSample.label}</h3>
+                    <p className="mt-2 text-sm leading-6 text-[rgba(17,17,17,0.7)]">
+                      {activeSample.summary}
+                    </p>
+                  </div>
+                  <p className="text-sm leading-6 text-[rgba(17,17,17,0.66)]">
+                    Expected signal: {activeSample.expectedOutcome}
                   </p>
                 </div>
-                <div className="rounded-2xl bg-paper/70 px-4 py-3 text-sm text-[rgba(17,17,17,0.72)]">
-                  <span className="block text-xs uppercase tracking-[0.18em] text-gold">
-                    Expected signal
-                  </span>
-                  <span className="mt-1 block">{activeSample.expectedOutcome}</span>
-                </div>
-              </div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {activeSample.focus.map((item) => (
-                  <span
-                    key={`${target}-${item}`}
-                    className="rounded-full border border-[rgba(17,17,17,0.08)] bg-white px-3 py-1 text-xs uppercase tracking-[0.16em] text-[rgba(17,17,17,0.62)]"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
+              ) : (
+                <>
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="max-w-xl">
+                      <p className="text-xs uppercase tracking-[0.18em] text-marine">
+                        Sample context
+                      </p>
+                      <h3 className="mt-2 text-lg font-semibold">{activeSample.label}</h3>
+                      <p className="mt-2 text-sm leading-6 text-[rgba(17,17,17,0.7)]">
+                        {activeSample.summary}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl bg-paper/70 px-4 py-3 text-sm text-[rgba(17,17,17,0.72)]">
+                      <span className="block text-xs uppercase tracking-[0.18em] text-gold">
+                        Expected signal
+                      </span>
+                      <span className="mt-1 block">{activeSample.expectedOutcome}</span>
+                    </div>
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {activeSample.focus.map((item) => (
+                      <span
+                        key={`${target}-${item}`}
+                        className="rounded-full border border-[rgba(17,17,17,0.08)] bg-white px-3 py-1 text-xs uppercase tracking-[0.16em] text-[rgba(17,17,17,0.62)]"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           ) : null}
 
@@ -722,7 +823,9 @@ function TraceEditor({
               setSelectedId("");
             }}
             placeholder="Paste an agent trace here..."
-            className="min-h-[300px] w-full resize-y rounded-[22px] border border-[rgba(17,17,17,0.08)] bg-paper/60 p-4 text-sm leading-6 outline-none transition focus:border-marine focus:ring-2 focus:ring-marine/15"
+            className={`w-full resize-y rounded-[22px] border border-[rgba(17,17,17,0.08)] bg-paper/60 p-4 text-sm leading-6 outline-none transition focus:border-marine focus:ring-2 focus:ring-marine/15 ${
+              compact ? "min-h-[240px]" : "min-h-[300px]"
+            }`}
           />
 
           <div className="flex flex-wrap gap-2 text-xs leading-5 text-[rgba(17,17,17,0.55)]">

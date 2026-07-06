@@ -12,7 +12,8 @@ export async function evaluateTrace(
 
   try {
     return await evaluateWithOpenAI(trace, mode);
-  } catch {
+  } catch (error) {
+    console.error("OpenAI evaluation failed; falling back to heuristics.", error);
     return evaluateWithHeuristics(trace, mode);
   }
 }

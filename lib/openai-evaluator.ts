@@ -1,7 +1,8 @@
 import OpenAI from "openai";
+import { zodTextFormat } from "openai/helpers/zod";
 
 import { getEvaluationModeCopy } from "@/lib/evaluation-modes";
-import { extractJsonObject, evaluationReportSchema } from "@/lib/report-schema";
+import { evaluationReportSchema } from "@/lib/report-schema";
 import type { EvaluationMode, EvaluationReport } from "@/lib/types";
 
 function buildRubric(mode: EvaluationMode) {
@@ -57,8 +58,11 @@ export async function evaluateWithOpenAI(
     apiKey: process.env.OPENAI_API_KEY
   });
 
-  const response = await client.responses.create({
+  const response = await client.responses.parse({
     model: process.env.OPENAI_MODEL || "gpt-4.1-mini",
+    text: {
+      format: zodTextFormat(evaluationReportSchema, "agent_eval_report")
+    },
     input: [
       {
         role: "system",
@@ -81,9 +85,11 @@ export async function evaluateWithOpenAI(
     ]
   });
 
-  const parsed = evaluationReportSchema.parse(
-    JSON.parse(extractJsonObject(response.output_text))
-  );
+  if (!response.output_parsed) {
+    throw new Error("The model response did not contain structured output.");
+  }
+
+  const parsed = evaluationReportSchema.parse(response.output_parsed);
 
   return {
     ...parsed,

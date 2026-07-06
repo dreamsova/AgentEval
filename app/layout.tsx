@@ -1,21 +1,16 @@
 import type { Metadata } from "next";
-import { Newsreader, Space_Grotesk } from "next/font/google";
+import { Space_Grotesk } from "next/font/google";
 
 import "./globals.css";
 
-const display = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-display"
-});
-
-const body = Newsreader({
+const body = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-body"
 });
 
 export const metadata: Metadata = {
   title: "AgentEval",
-  description: "Evaluate AI agents by behavior, not just words."
+  description: "Behavioral reliability evaluation for AI agents."
 };
 
 export default function RootLayout({
@@ -25,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${display.variable} ${body.variable}`}>
+      <body className={body.variable}>
         {children}
       </body>
     </html>

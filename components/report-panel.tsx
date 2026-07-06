@@ -95,9 +95,14 @@ export function ReportPanel({
             >
               {verdictLabel}
             </span>
-            <span className="rounded-full bg-gold/12 px-3 py-1 text-xs uppercase tracking-[0.18em] text-gold">
+          </div>
+          <div className="mt-3 rounded-2xl bg-white/80 p-3">
+            <p className="text-xs uppercase tracking-[0.18em] text-gold">
+              Main failure mode
+            </p>
+            <p className="mt-1 text-sm leading-6 text-[rgba(17,17,17,0.74)]">
               {report.main_failure_mode}
-            </span>
+            </p>
           </div>
           <p className="mt-3 text-sm leading-6 text-[rgba(17,17,17,0.74)]">
             {report.summary}
