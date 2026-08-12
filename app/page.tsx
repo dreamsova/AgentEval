@@ -13,6 +13,21 @@ const whatItFinds = [
   "Strategic masking"
 ];
 
+const underTheHood = [
+  {
+    title: "Multi-agent simulation environment",
+    body: "Stateful repeated interactions across heterogeneous LLM personas."
+  },
+  {
+    title: "Behavioral evaluation pipeline",
+    body: "Evidence-linked failure detection, monitoring, and intervention."
+  },
+  {
+    title: "Interactive evaluation product",
+    body: "Server-side analysis of arbitrary agent traces with shareable reports."
+  }
+];
+
 export default function Home() {
   return (
     <main className="grain min-h-screen px-5 pb-16 pt-6 text-ink sm:px-8 lg:px-10">
@@ -39,8 +54,8 @@ export default function Home() {
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-[rgba(17,17,17,0.7)]">
               Paste a trace and get a clean reliability report with evidence,
-              failure mode, and follow-up tests. Built from your PGG research on
-              monitoring, cooperation, and deception.
+              failure mode, and follow-up tests. Derived from a 1,350-observation
+              study of monitoring, cooperation, and deception in LLM agents.
             </p>
             <div className="mt-7 flex flex-wrap gap-3 text-sm">
               <a
@@ -48,6 +63,14 @@ export default function Home() {
                 className="inline-flex rounded-full bg-ink px-5 py-3 font-medium text-paper transition hover:bg-marine"
               >
                 Run the demo
+              </a>
+              <a
+                href="https://github.com/dreamsova/AgentEval"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex rounded-full border border-[rgba(17,17,17,0.1)] bg-white px-5 py-3 font-medium text-ink transition hover:border-marine/40 hover:text-marine"
+              >
+                View GitHub
               </a>
               <span className="inline-flex rounded-full border border-[rgba(17,17,17,0.08)] bg-white px-4 py-3 text-[rgba(17,17,17,0.62)]">
                 No login. No setup. One trace in, one report out.
@@ -100,6 +123,36 @@ export default function Home() {
           </div>
           <div className="mt-6">
             <EvaluationWorkbench sampleTraces={sampleTraces} compact />
+          </div>
+        </section>
+
+        <section className="rounded-[30px] bg-white/72 p-6 shadow-panel backdrop-blur sm:p-8">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-[0.24em] text-rust">
+                Under the hood
+              </p>
+              <h2 className="mt-2 text-3xl font-semibold tracking-[-0.04em]">
+                What I built
+              </h2>
+            </div>
+            <p className="max-w-lg text-sm leading-6 text-[rgba(17,17,17,0.62)]">
+              The demo connects a research environment, an evaluation pipeline,
+              and a user-facing product surface.
+            </p>
+          </div>
+          <div className="mt-6 grid gap-3 md:grid-cols-3">
+            {underTheHood.map((item) => (
+              <div
+                key={item.title}
+                className="rounded-lg border border-[rgba(17,17,17,0.08)] bg-paper/56 p-4"
+              >
+                <h3 className="text-base font-semibold">{item.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-[rgba(17,17,17,0.66)]">
+                  {item.body}
+                </p>
+              </div>
+            ))}
           </div>
         </section>
       </section>
