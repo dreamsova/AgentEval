@@ -1,12 +1,12 @@
 # Research-to-Product Bridge
 
+Research system: [dreamsova/pgg-deception-detection](https://github.com/dreamsova/pgg-deception-detection)
+
 ## The bridge in one sentence
 
 The PGG project is not the product. It is the controlled environment that reveals why behavior-language misalignment is a real and important agent failure mode.
 
-## How to describe the research
-
-Use this lighter framing:
+## Research model
 
 - multi-agent LLM cooperation as an algorithmic monitoring problem
 - 11 algorithmic monitoring and enforcement mechanisms
@@ -59,22 +59,17 @@ AgentEval should answer three practical questions:
 2. Did the agent communicate uncertainty and limitations honestly?
 3. Is the agent using polished language to hide weak execution?
 
-## What to reuse from the research directly
+## Research concepts used in AgentEval
 
-- the manipulator case as your canonical failure demo
-- the style-vs-substance gap as the headline insight
-- the low-cost monitoring idea as the product rationale
-- the multi-signal logic as the scoring architecture
+- manipulator traces as canonical failure cases
+- the style-vs-substance gap as the core behavioral risk
+- low-cost monitoring as the rationale for adaptive tool routing
+- multi-signal monitoring as the scoring architecture
 
-## What not to drag into the product too early
+## Current scope boundaries
 
 - equilibrium proofs
 - re-derived payoff design
 - large-scale literature positioning
 - every enforcement condition from the experiment
 - fully automated causal inference in the MVP
-
-## Best story to tell
-
-The research discovered the failure mode.
-The product makes that failure mode actionable.

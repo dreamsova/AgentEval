@@ -11,8 +11,6 @@ The app lives in the root of this project:
 - `lib/`
 - `package.json`
 
-If you keep a local clone of the separate PGG research repo next to this app, make sure it stays gitignored before publishing.
-
 ## 2. Import the repo into Vercel
 
 1. Go to [Vercel](https://vercel.com/).
@@ -48,16 +46,17 @@ After deployment, test:
 
 1. the landing page loads correctly
 2. sample traces populate the textarea
-3. clicking `Evaluate Agent` returns a report
-4. the app still works when the OpenAI call fails, using heuristic fallback
+3. clicking `Run Evaluation Agent` streams real tool events before the report
+4. the final report records tools used, monitoring tier, and stop reason
+5. the app still works when the OpenAI call fails, using heuristic fallback
 
-## 6. Recommended demo posture
+## 6. Deployment scope
 
-For founder-house or startup outreach, keep the first live version narrow:
+Keep the public MVP focused on the core reliability workflow:
 
 - one landing page
 - one input box
 - one report view
 - three sample traces
 
-Do not add auth, billing, or database features before the core demo feels strong.
+Add durable rate limiting, authentication, billing, and database storage only when usage requirements justify them.

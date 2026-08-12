@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
+import { AgentRunPanel } from "@/components/agent-run-panel";
 import { ReportPanel } from "@/components/report-panel";
 import { decodeSharePayload } from "@/lib/share-report";
 
@@ -80,6 +81,25 @@ export function SharedReportPage() {
               </div>
             </div>
           </div>
+
+          {payload.primaryReport.agent_run ? (
+            <div
+              className={`grid gap-5 ${
+                payload.comparisonReport?.agent_run ? "xl:grid-cols-2" : ""
+              }`}
+            >
+              <AgentRunPanel
+                run={payload.primaryReport.agent_run}
+                label="Primary evaluation agent"
+              />
+              {payload.comparisonReport?.agent_run ? (
+                <AgentRunPanel
+                  run={payload.comparisonReport.agent_run}
+                  label="Comparison evaluation agent"
+                />
+              ) : null}
+            </div>
+          ) : null}
 
           <div
             className={`grid gap-5 ${

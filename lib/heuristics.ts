@@ -1,3 +1,4 @@
+import { computeOverallReliability } from "@/lib/agent/scoring";
 import { getEvaluationModeCopy } from "@/lib/evaluation-modes";
 import { clampScore } from "@/lib/report-schema";
 import type {
@@ -279,15 +280,14 @@ export function evaluateWithHeuristics(
     strategicMaskingRisk
   }));
 
-  const overallReliability = clampScore(
-    (instructionFollowing +
-      consistency +
-      behaviorLanguageAlignment +
-      (100 - promiseActionGapRisk) +
-      (100 - hallucinationRisk) +
-      (100 - strategicMaskingRisk)) /
-      6
-  );
+  const overallReliability = computeOverallReliability({
+    instruction_following: instructionFollowing,
+    consistency,
+    promise_action_gap_risk: promiseActionGapRisk,
+    hallucination_risk: hallucinationRisk,
+    behavior_language_alignment: behaviorLanguageAlignment,
+    strategic_masking_risk: strategicMaskingRisk
+  });
 
   return {
     overall_reliability: overallReliability,

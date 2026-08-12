@@ -1,8 +1,9 @@
 "use client";
 
 import type { ChangeEvent } from "react";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState } from "react";
 
+import { AgentRunPanel } from "@/components/agent-run-panel";
 import { ReportPanel } from "@/components/report-panel";
 import { evaluationModes, getEvaluationModeCopy } from "@/lib/evaluation-modes";
 import {
@@ -14,8 +15,10 @@ import {
   encodeSharePayload
 } from "@/lib/share-report";
 import type {
+  AgentStep,
   EvaluationMode,
   EvaluationReport,
+  EvaluationStreamEvent,
   SampleTrace,
   SavedEvaluation
 } from "@/lib/types";
@@ -29,7 +32,11 @@ const STORAGE_KEY = "agenteval.saved-evaluations";
 
 type TraceTarget = "primary" | "comparison";
 
-async function requestEvaluation(trace: string, mode: EvaluationMode) {
+async function requestEvaluation(
+  trace: string,
+  mode: EvaluationMode,
+  onEvent?: (event: EvaluationStreamEvent) => void
+) {
   const response = await fetch("/api/evaluate", {
     method: "POST",
     headers: {
@@ -38,18 +45,61 @@ async function requestEvaluation(trace: string, mode: EvaluationMode) {
     body: JSON.stringify({ trace, mode })
   });
 
-  const payload = (await response.json()) as
-    | EvaluationReport
-    | { error?: string };
-
-  if (!response.ok || ("error" in payload && payload.error)) {
-    throw new Error(
-      ("error" in payload ? payload.error : undefined) ??
-        "Something went wrong while evaluating."
-    );
+  if (!response.ok) {
+    const payload = (await response.json()) as { error?: string };
+    throw new Error(payload.error ?? "Something went wrong while evaluating.");
   }
 
-  return payload as EvaluationReport;
+  if (!response.body) {
+    throw new Error("The evaluation stream did not start.");
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  const events: EvaluationStreamEvent[] = [];
+
+  function consumeLine(line: string) {
+    if (!line.trim()) {
+      return;
+    }
+
+    const event = JSON.parse(line) as EvaluationStreamEvent;
+    events.push(event);
+    onEvent?.(event);
+
+    if (event.type === "error") {
+      throw new Error(event.error);
+    }
+  }
+
+  while (true) {
+    const { done, value } = await reader.read();
+    buffer += decoder.decode(value, { stream: !done });
+    const lines = buffer.split("\n");
+    buffer = lines.pop() ?? "";
+
+    for (const line of lines) {
+      consumeLine(line);
+    }
+
+    if (done) {
+      break;
+    }
+  }
+
+  consumeLine(buffer);
+
+  const completed = events.find(
+    (event): event is Extract<EvaluationStreamEvent, { type: "complete" }> =>
+      event.type === "complete"
+  );
+
+  if (!completed) {
+    throw new Error("The evaluation agent finished without a report.");
+  }
+
+  return completed.report;
 }
 
 function deriveTraceFromJson(input: unknown): string {
@@ -165,7 +215,11 @@ export function EvaluationWorkbench({
   const [error, setError] = useState<string | null>(null);
   const [copiedJson, setCopiedJson] = useState(false);
   const [copiedShareLink, setCopiedShareLink] = useState(false);
-  const [isPending, startTransition] = useTransition();
+  const [isEvaluating, setIsEvaluating] = useState(false);
+  const [activeEvaluationTarget, setActiveEvaluationTarget] =
+    useState<TraceTarget | null>(null);
+  const [primaryAgentSteps, setPrimaryAgentSteps] = useState<AgentStep[]>([]);
+  const [comparisonAgentSteps, setComparisonAgentSteps] = useState<AgentStep[]>([]);
 
   useEffect(() => {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -334,17 +388,45 @@ export function EvaluationWorkbench({
 
   async function evaluateCurrentTraceSet() {
     setError(null);
+    setIsEvaluating(true);
+    setPrimaryReport(null);
+    setComparisonReport(null);
+    setPrimaryAgentSteps([]);
+    setComparisonAgentSteps([]);
 
     try {
-      const nextPrimary = await requestEvaluation(primaryTrace, evaluationMode);
+      setActiveEvaluationTarget("primary");
+      const nextPrimary = await requestEvaluation(
+        primaryTrace,
+        evaluationMode,
+        (event) => {
+          if (event.type === "agent_step") {
+            setPrimaryAgentSteps((current) => [...current, event.step]);
+          }
+        }
+      );
       setPrimaryReport(nextPrimary);
 
+      if (nextPrimary.engine === "heuristic") {
+        setPrimaryAgentSteps([]);
+      }
+
       if (compareMode && comparisonTrace.trim()) {
+        setActiveEvaluationTarget("comparison");
         const nextComparison = await requestEvaluation(
           comparisonTrace,
-          evaluationMode
+          evaluationMode,
+          (event) => {
+            if (event.type === "agent_step") {
+              setComparisonAgentSteps((current) => [...current, event.step]);
+            }
+          }
         );
         setComparisonReport(nextComparison);
+
+        if (nextComparison.engine === "heuristic") {
+          setComparisonAgentSteps([]);
+        }
       } else {
         setComparisonReport(null);
       }
@@ -359,6 +441,9 @@ export function EvaluationWorkbench({
           ? caughtError.message
           : "Unable to evaluate the provided trace."
       );
+    } finally {
+      setActiveEvaluationTarget(null);
+      setIsEvaluating(false);
     }
   }
 
@@ -372,13 +457,13 @@ export function EvaluationWorkbench({
                 Start with a sample trace or paste your own
               </h3>
               <p className="mt-2 text-sm leading-6 text-[rgba(17,17,17,0.68)]">
-                AgentEval returns a reliability score, main failure mode, linked
-                evidence, and suggested follow-up tests.
+                The evaluation agent chooses diagnostic tools, links observations
+                to evidence, and returns a reliability report.
               </p>
             </div>
             <div className="flex flex-wrap gap-2 text-xs leading-5 text-[rgba(17,17,17,0.55)]">
               <span className="rounded-full bg-white px-3 py-1">1. Pick a trace</span>
-              <span className="rounded-full bg-white px-3 py-1">2. Evaluate</span>
+              <span className="rounded-full bg-white px-3 py-1">2. Agent selects tools</span>
               <span className="rounded-full bg-white px-3 py-1">3. Inspect evidence</span>
             </div>
           </div>
@@ -498,7 +583,7 @@ export function EvaluationWorkbench({
           </span>
           {compact ? (
             <span className="rounded-full bg-white px-3 py-1">
-              Server-side evaluation with shareable output
+              Server-side tool loop with shareable output
             </span>
           ) : (
             <>
@@ -514,28 +599,50 @@ export function EvaluationWorkbench({
         <button
           type="button"
           onClick={() => {
-            startTransition(() => {
-              void evaluateCurrentTraceSet();
-            });
+            void evaluateCurrentTraceSet();
           }}
           disabled={
-            !primaryTrace.trim() || (compareMode && !comparisonTrace.trim()) || isPending
+            !primaryTrace.trim() ||
+            (compareMode && !comparisonTrace.trim()) ||
+            isEvaluating
           }
           className="inline-flex min-w-[190px] items-center justify-center rounded-full bg-ink px-5 py-3 text-sm font-medium text-paper transition hover:bg-marine disabled:cursor-not-allowed disabled:bg-ink/45"
         >
-          {isPending
+          {isEvaluating
             ? compareMode
               ? "Comparing..."
               : "Evaluating..."
             : compareMode
               ? "Compare traces"
-              : "Evaluate Agent"}
+              : "Run Evaluation Agent"}
         </button>
       </div>
 
       {error ? (
         <div className="rounded-[24px] border border-rust/25 bg-rust/10 px-4 py-3 text-sm text-rust">
           {error}
+        </div>
+      ) : null}
+
+      {isEvaluating || primaryReport?.agent_run || primaryAgentSteps.length > 0 ? (
+        <div className={`grid gap-5 ${compareMode ? "xl:grid-cols-2" : ""}`}>
+          <AgentRunPanel
+            run={primaryReport?.agent_run}
+            liveSteps={primaryAgentSteps}
+            isRunning={activeEvaluationTarget === "primary"}
+            label="Primary evaluation agent"
+          />
+          {compareMode &&
+          (activeEvaluationTarget === "comparison" ||
+            comparisonReport?.agent_run ||
+            comparisonAgentSteps.length > 0) ? (
+            <AgentRunPanel
+              run={comparisonReport?.agent_run}
+              liveSteps={comparisonAgentSteps}
+              isRunning={activeEvaluationTarget === "comparison"}
+              label="Comparison evaluation agent"
+            />
+          ) : null}
         </div>
       ) : null}
 
@@ -625,6 +732,11 @@ export function EvaluationWorkbench({
           where language and behavior diverge.
         </div>
       )}
+
+      <p className="text-xs leading-5 text-[rgba(17,17,17,0.48)]">
+        Shared links include report data and a trace excerpt. Do not evaluate or
+        share sensitive traces in this public demo.
+      </p>
 
       {compact ? null : (
         <div className="rounded-[26px] border border-[rgba(17,17,17,0.08)] bg-white/82 p-5 shadow-panel">

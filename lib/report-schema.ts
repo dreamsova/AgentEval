@@ -20,6 +20,10 @@ export const evaluationReportSchema = z.object({
   recommended_tests: z.array(z.string().min(1)).min(2).max(5)
 });
 
+export const agentJudgmentSchema = evaluationReportSchema.omit({
+  overall_reliability: true
+});
+
 export function extractJsonObject(raw: string) {
   const start = raw.indexOf("{");
   const end = raw.lastIndexOf("}");

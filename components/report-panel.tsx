@@ -25,7 +25,7 @@ const metricConfig = [
   },
   {
     key: "hallucination_risk",
-    label: "Hallucination Risk",
+    label: "Unsupported Claim Risk",
     kind: "risk"
   },
   {
@@ -83,7 +83,11 @@ export function ReportPanel({
         <div className="rounded-[22px] bg-paper/60 p-4">
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-moss/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-moss">
-              {report.engine === "llm" ? "LLM judge" : "Heuristic mode"}
+              {report.engine === "agent"
+                ? "Tool-using agent"
+                : report.engine === "llm"
+                  ? "LLM judge"
+                  : "Heuristic mode"}
             </span>
             <span className="rounded-full bg-white px-3 py-1 text-xs uppercase tracking-[0.18em] text-[rgba(17,17,17,0.62)]">
               {report.evaluation_mode.replace("-", " ")}

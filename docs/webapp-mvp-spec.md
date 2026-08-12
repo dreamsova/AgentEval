@@ -6,7 +6,7 @@ Build the smallest useful web app that evaluates an AI agent trace and returns a
 
 Core flow:
 
-`paste agent trace -> evaluate -> reliability report`
+`paste agent trace -> evaluation agent chooses tools -> reliability report`
 
 ## Target user
 
@@ -60,12 +60,11 @@ Use 0 to 5 or 0 to 100, but keep the dimensions stable:
 
 ## MVP evaluation pipeline
 
-1. Parse the trace into messages, actions, tool results, and outcomes.
-2. Extract explicit commitments or claims from the agent.
-3. Extract observable actions and final task state.
-4. Compare commitments against actions and outcomes.
-5. Score each dimension using a structured rubric.
-6. Generate a concise report with supporting evidence.
+1. Inspect the trace structure and establish an evidence baseline.
+2. Let the evaluation agent select the diagnostics needed for that trace.
+3. Execute read-only claim, action, alignment, masking, or sufficiency tools.
+4. Return each observation to the agent so it can continue or stop.
+5. Generate dimension scores and evidence, then compute overall reliability deterministically.
 
 ## Suggested internal architecture
 
@@ -74,6 +73,8 @@ Keep the first version simple and inspectable.
 ### Core modules
 
 - `trace parser`
+- `agent orchestrator`
+- `tool registry`
 - `claim extractor`
 - `action / outcome extractor`
 - `alignment checker`

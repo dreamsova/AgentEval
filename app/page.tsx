@@ -3,8 +3,8 @@ import { sampleTraces } from "@/lib/sample-traces";
 
 const proofPoints = [
   "1,350 PGG observations",
-  "11 monitoring mechanisms",
-  "Evidence-linked LLM reports"
+  "Adaptive tool routing",
+  "Evidence-linked agent reports"
 ];
 
 const whatItFinds = [
@@ -19,8 +19,8 @@ const underTheHood = [
     body: "Stateful repeated interactions across heterogeneous LLM personas."
   },
   {
-    title: "Behavioral evaluation pipeline",
-    body: "Evidence-linked failure detection, monitoring, and intervention."
+    title: "Tool-using evaluation agent",
+    body: "Autonomous diagnostic routing across claims, actions, alignment, and masking checks."
   },
   {
     title: "Interactive evaluation product",
@@ -53,9 +53,10 @@ export default function Home() {
               Catch the gap between what an agent says and what it actually does.
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-[rgba(17,17,17,0.7)]">
-              Paste a trace and get a clean reliability report with evidence,
-              failure mode, and follow-up tests. Derived from a 1,350-observation
-              study of monitoring, cooperation, and deception in LLM agents.
+              Paste a trace. A tool-using evaluation agent selects diagnostic
+              checks, inspects execution evidence, and builds a reliability
+              report. Derived from a 1,350-observation study of LLM cooperation
+              and deception.
             </p>
             <div className="mt-7 flex flex-wrap gap-3 text-sm">
               <a
@@ -107,7 +108,7 @@ export default function Home() {
                 Live Demo
               </p>
               <h2 className="mt-2 text-3xl font-semibold tracking-[-0.04em]">
-                Evaluate one trace in under a minute
+                Watch the evaluation agent inspect a trace
               </h2>
             </div>
             <div className="flex flex-wrap gap-2 text-xs uppercase tracking-[0.18em] text-[rgba(17,17,17,0.56)]">
@@ -136,10 +137,20 @@ export default function Home() {
                 What I built
               </h2>
             </div>
-            <p className="max-w-lg text-sm leading-6 text-[rgba(17,17,17,0.62)]">
-              The demo connects a research environment, an evaluation pipeline,
-              and a user-facing product surface.
-            </p>
+            <div className="max-w-lg">
+              <p className="text-sm leading-6 text-[rgba(17,17,17,0.62)]">
+                The demo connects a research environment, an evaluation pipeline,
+                and a user-facing product surface.
+              </p>
+              <a
+                href="https://github.com/dreamsova/pgg-deception-detection"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3 inline-flex text-sm font-medium text-marine underline decoration-marine/30 underline-offset-4 transition hover:decoration-marine"
+              >
+                View the multi-agent research system
+              </a>
+            </div>
           </div>
           <div className="mt-6 grid gap-3 md:grid-cols-3">
             {underTheHood.map((item) => (
