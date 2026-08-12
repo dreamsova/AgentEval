@@ -40,6 +40,7 @@ describe("runEvaluationAgent", () => {
             type: "function_call",
             name: "inspect_trace",
             arguments: JSON.stringify({ reason: "Inspect the trace structure." }),
+            parsed_arguments: { reason: "Inspect the trace structure." },
             call_id: "call_1"
           }
         ],
@@ -51,6 +52,9 @@ describe("runEvaluationAgent", () => {
             type: "function_call",
             name: "verify_claim_action_alignment",
             arguments: JSON.stringify({ reason: "Check the unsupported completion claim." }),
+            parsed_arguments: {
+              reason: "Check the unsupported completion claim."
+            },
             call_id: "call_2"
           }
         ],
@@ -72,6 +76,9 @@ describe("runEvaluationAgent", () => {
     );
 
     expect(parse).toHaveBeenCalledTimes(3);
+    expect(JSON.stringify(parse.mock.calls[1][0].input)).not.toContain(
+      "parsed_arguments"
+    );
     expect(observedSteps).toEqual([
       "inspect_trace",
       "verify_claim_action_alignment"

@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
 import type {
   ParsedResponseFunctionToolCall,
+  ParsedResponseOutputItem,
   ResponseInputItem
 } from "openai/resources/responses/responses";
 
@@ -53,6 +54,37 @@ function getToolChoice(toolSteps: number) {
   }
 
   return toolSteps === 1 ? ("required" as const) : ("auto" as const);
+}
+
+export function toAgentReplayItems(
+  items: ParsedResponseOutputItem<unknown>[]
+): ResponseInputItem[] {
+  return items.map((item) => {
+    if (item.type === "function_call") {
+      return {
+        type: "function_call",
+        call_id: item.call_id,
+        name: item.name,
+        arguments: item.arguments
+      };
+    }
+
+    if (item.type === "message") {
+      return {
+        ...item,
+        content: item.content.map((content) => {
+          if (content.type !== "output_text") {
+            return content;
+          }
+
+          const { parsed: _parsed, ...replayableContent } = content;
+          return replayableContent;
+        })
+      };
+    }
+
+    return item as ResponseInputItem;
+  });
 }
 
 export async function runEvaluationAgent(
@@ -109,7 +141,7 @@ export async function runEvaluationAgent(
       break;
     }
 
-    input.push(...(response.output as ResponseInputItem[]));
+    input.push(...toAgentReplayItems(response.output));
 
     for (const toolCall of toolCalls) {
       if (steps.length >= MAX_TOOL_STEPS) {
