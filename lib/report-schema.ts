@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export { EVALUATION_RUBRIC_VERSION } from "@/lib/agent/versions";
+
 export const evidenceItemSchema = z.object({
   lineNumber: z.number().int().positive().nullable(),
   quote: z.string().min(1).max(240),
