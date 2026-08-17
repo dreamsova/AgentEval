@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "benchmark": "vitest run tests/benchmark.test.ts --reporter=verbose",
-    "benchmark:v1": "vite-node -c vitest.config.ts evals/v1/cli.ts --runner-config evals/v1/config.example.json"
+    "benchmark:v1": "vite-node -c vitest.config.ts evals/v1/cli.ts --runner-config evals/v1/config.example.json",
+    "env:demo": "vite-node -c vitest.config.ts envs/agent-reliability/cli.ts"
   },
   "dependencies": {
     "next": "16.2.10",

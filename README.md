@@ -2,7 +2,7 @@
 
 **Evidence-linked evaluation of whether an agent trace supports its own claims.**
 
-[Live demo](https://agenteval-eight.vercel.app) | [Evaluation protocol](docs/evaluation-protocol.md) | [Benchmark v1 status](docs/benchmark-v1.md) | [Research brief](docs/research-brief.md)
+[Live demo](https://agenteval-eight.vercel.app) | [Reliability environment](docs/agent-reliability-env.md) | [Evaluation protocol](docs/evaluation-protocol.md) | [Benchmark v1 status](docs/benchmark-v1.md) | [Research brief](docs/research-brief.md)
 
 AgentEval normalizes an AI-agent trace, runs bounded diagnostic checks, and returns a behavioral-reliability report. It evaluates only observable trace evidence. Its findings are rubric-based signals: they are not calibrated probabilities, judgments about hidden intent, or proof that an external action occurred outside the supplied trace.
 
@@ -18,6 +18,7 @@ AgentEval normalizes an AI-agent trace, runs bounded diagnostic checks, and retu
 | Benchmark v1 data scaffold | Candidate-ready, not scoring-ready | Deterministic checks pass for the committed 84-case scaffold, but every proposed annotation still requires independent human review. No accepted test labels or benchmark performance results exist. |
 | Annotation and adjudication workflow | Implemented; human work not performed | The offline workflow generates blinded opaque-ID packets, validates two independent responses, computes agreement, queues disagreements, and freezes only adjudicated labels. No real annotator responses exist yet. |
 | Benchmark execution harness | Implemented and covered by automated tests | Four evaluator configurations share a label-isolated, resumable, bounded-concurrency runner with fail-closed records, manifests, JSONL predictions, summaries, and group-aware intervals. |
+| Agent Reliability Environment v0 | Implemented and covered by automated tests | A deterministic `reset`/`step` environment exposes four virtual tools, revision-aware tests, terminal verification, decomposed rewards, five exploit probes, and a rollout adapter into AgentEval's canonical trace. It is a toy environment, not an RL training result. |
 | Paid-model comparison study | Future work | The four-way evaluator experiment has not been run. No accuracy, latency, token, or cost conclusion is claimed. |
 
 ## Evaluation pipeline
@@ -116,12 +117,15 @@ npm run typecheck
 npm run test
 npm run benchmark
 npm run benchmark:v1
+npm run env:demo
 npm run build
 ```
 
 `npm run benchmark` executes a legacy development-only heuristic ranking check. It is not Benchmark v1 test scoring and must not be reported as held-out performance. The main test suite covers trace normalization/pairing/redaction, evaluation input hashing, evaluator orchestration with mocked model responses, fallback policy, deterministic scoring, and Benchmark v1 schema/integrity/metric utilities.
 
 `npm run benchmark:v1` executes the checked-in development configuration with the deterministic heuristic and writes ignored run artifacts under `evals/v1/results/`. Model-based configurations require an explicit API key and never fall back to heuristics in experimental mode.
+
+`npm run env:demo` runs five scripted policies across three deterministic virtual-file tasks. The terminal verifier independently scores artifact correctness, fresh tests, and structured report/state alignment. Free-text summary content remains declared rather than semantically verified. See [Agent Reliability Environment v0](docs/agent-reliability-env.md) for its trust boundary and non-claims.
 
 ## Safety and limits
 
@@ -145,5 +149,6 @@ The legacy Public Goods Game (PGG) work is treated here only as exploratory moti
 - `lib/agent/`: prompt, diagnostic registry, orchestration, scoring, and telemetry.
 - `evals/v1/`: Benchmark v1 candidate data contract, annotation workflow, runner configuration, metrics, integrity utilities, and readiness reports.
 - `lib/evaluators/`: heuristic, direct-judge, all-context, and adaptive evaluator adapters plus the batch runner.
+- `envs/agent-reliability/`: stateful environment, declarative verifier, reward contract, scripted exploit probes, rollout runner, and trace adapter.
 - `tests/`: implementation and Benchmark v1 utility tests.
 - `docs/`: protocol, trace contract, benchmark status, research brief, product notes, and deployment notes.
