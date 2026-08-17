@@ -9,3 +9,4 @@ tsconfig.tsbuildinfo
 .DS_Store
 .vercel
 pgg-deception-detection
+evals/v1/results/

@@ -4,7 +4,7 @@
 
 This protocol is the claim boundary for comparing AgentEval evaluator configurations. It measures agreement with accepted trace-level annotations, evidence localization, robustness to style variants, run variability, and operational efficiency. It does not measure an agent's hidden intent, truth outside the supplied trace, production fitness, or a probability of future reliability.
 
-The repository implements schemas, validation, metric utilities, a deterministic heuristic, and an adaptive tool-using evaluator. It does not yet contain accepted Benchmark v1 test labels or results from the planned comparison study.
+The repository implements schemas, validation, annotation/adjudication tooling, metric utilities, all four evaluator configurations, and a label-isolated batch runner. It does not yet contain accepted Benchmark v1 test labels or results from the comparison study.
 
 ## Unit of evaluation
 
@@ -19,8 +19,8 @@ The comparison must keep these configurations distinct in logs and reports. No r
 | ID | Configuration | Current status | Information and execution boundary |
 | --- | --- | --- | --- |
 | H | Deterministic heuristic | Implemented in `lib/heuristics.ts` | Canonical trace text plus fixed lexical/count rules; no model calls or diagnostic-tool loop. |
-| L | Single-pass model judge | Planned research baseline; not present in the current runtime | One model synthesis call over the same canonical trace representation, with no diagnostic tools. |
-| F | Fixed full-diagnostic evaluator | Planned ablation; not present in the current runtime | Run each eligible local diagnostic in a preregistered fixed order, then one model synthesis step. |
+| L | Single-pass model judge | Implemented in `lib/evaluators/judges.ts` | One model synthesis call over the same canonical trace representation, with no diagnostic tools. |
+| F | Fixed all-context judge | Implemented in `lib/evaluators/judges.ts` | Execute the eligible local diagnostics once, provide their observations together, then make one model synthesis call. |
 | A | Adaptive tool-routing evaluator | Implemented in `lib/agent/evaluation-agent.ts` | First structural inspection is forced, another tool step is required, later tool selection is adaptive, tools are not repeated, and synthesis occurs by sufficiency decision or after at most six tool steps. |
 
 Configuration labels describe mechanisms, not quality rankings. “Full” means the preregistered diagnostic set, not exhaustive verification. The local diagnostics are read-only analyses of supplied trace data.
@@ -51,6 +51,8 @@ Reliable cases have `primary_failure: null` and no failure labels. Evidence span
 7. Mark accepted records `frozen`, lock test inputs, and move accepted test labels to evaluator-only access.
 
 Until this gate is complete, `gold_evidence` fields are proposals, not gold annotations, and `needs_human_review` records cannot support performance claims.
+
+The implemented workflow in `evals/v1/annotation/` generates blinded packets with opaque IDs, validates independent responses, computes agreement, creates disagreement/adjudication queues, and emits a versioned freeze manifest only after accepted adjudication. Tooling does not substitute for the required human decisions.
 
 ## Split, grouping, and freeze rules
 
@@ -104,7 +106,7 @@ Exact implemented definitions are in [Benchmark v1 metrics](../evals/v1/METRICS.
 
 The implemented bootstrap resamples whole `group_id` units with replacement, preserving within-group dependence. The default is 1,000 seeded iterations with 95% percentile intervals; `valid_samples` must accompany metrics that are undefined in some resamples.
 
-For the future four-way comparison:
+For the future execution of the four-way comparison:
 
 - report point estimates and group-aware intervals for each arm;
 - report paired, group-level deltas against the preregistered primary baseline;
@@ -112,7 +114,7 @@ For the future four-way comparison:
 - disclose the number of eligible cases/pairs and missing measurements for every statistic;
 - if confirmatory hypothesis tests are added, preregister the test and family-wise correction across comparisons before viewing test results.
 
-Paired-delta and multiplicity routines are study-runner work still to be implemented; the current metric module must not be described as providing them.
+Paired-delta and multiplicity routines are not implemented; the current runner and metric module must not be described as providing them.
 
 ## Run handling
 
@@ -126,7 +128,7 @@ Allowed before human freeze and scoring:
 
 - the canonical trace/evaluator/telemetry mechanisms are implemented where linked to code and tests;
 - the candidate scaffold has the counts and deterministic integrity results in its generated readiness report;
-- annotations and comparison experiments are planned.
+- annotation and comparison tooling is implemented, while human annotations and comparison experiments remain pending.
 
 Allowed after a compliant study:
 

@@ -18,7 +18,7 @@ Research and ops modes fail closed when the model is unavailable or fails. Found
 
 Benchmark v1 defines one trace per case, a binary reliability target, six observable failure labels, evidence spans, required checks, group/pair metadata, deterministic hashes, and strict schemas. Groups keep counterfactual and style variants in one split. Predictions are finalized before accepted test labels are joined inside the scoring boundary.
 
-The planned study compares four configurations: implemented deterministic heuristics, a planned single-pass model judge, a planned fixed full-diagnostic evaluator, and the implemented adaptive tool router. Fairness controls require the same frozen cases and prediction contract, matched model/budget settings where the mechanism permits, explicit failure handling, and versioned run manifests.
+The implemented study harness compares four configurations: deterministic heuristics, a single-pass model judge, a fixed all-context judge, and the adaptive tool router. Fairness controls require the same frozen cases and prediction contract, matched model/budget settings where the mechanism permits, explicit failure handling, and versioned run manifests. The harness exists; the paid comparison has not been run.
 
 Primary reporting uses balanced accuracy, with macro-F1, per-failure and evidence-line metrics, style-pair measures, ranking metrics when defined, variability, and efficiency aggregates. Confidence intervals resample whole groups. No comparison result has been produced.
 
@@ -30,6 +30,7 @@ The current evidence is implementation and data-readiness evidence:
 - fallback policy, telemetry, deterministic score aggregation, and mocked adaptive-loop behavior are tested;
 - the generated Benchmark v1 readiness report records all deterministic scaffold checks passing;
 - the repository-visible scaffold contains 24 dev/regression items and 60 test candidates, with proposed annotations separated from test inputs.
+- the blinded annotation/adjudication workflow and label-isolated, resumable four-configuration batch runner are implemented and tested offline.
 
 This evidence supports “implemented mechanism” and “candidate scaffold ready for human annotation.” It does not support evaluator accuracy, held-out generalization, human agreement, cost savings, or production readiness.
 

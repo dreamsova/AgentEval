@@ -33,6 +33,8 @@ The 60 test candidates form 30 counterfactual pairs. Six same-label style pairs 
 - [Coverage utilities](../evals/v1/coverage.ts) construct the deterministic readiness report.
 - [Metric utilities](../evals/v1/metrics.ts) score already-joined prediction records without loading evaluator inputs or labels.
 - [Metric definitions](../evals/v1/METRICS.md) state the scoring contract.
+- [Annotation workflow](../evals/v1/annotation/README.md) defines blinded packet generation, agreement, adjudication, and freeze-manifest handling.
+- [Benchmark runner](../evals/v1/run.ts) executes one configured evaluator without exposing labels to prediction code, then joins accepted labels only inside the scoring boundary.
 - `evals/v1/datasets/test-labels/candidate-labels.json` contains AI-proposed labels for review tooling. Evaluator code must never import it.
 
 The candidate-label file is not a private gold-label store. Separation in the repository prevents an accidental direct import path in the intended runner design, but it is not an access-control boundary. Accepted test labels must eventually live in evaluator-only storage and be joined only after predictions are finalized.
@@ -84,16 +86,16 @@ For an accepted release:
 
 No case may move because of evaluator errors or desired balance after evaluation. A correction to a frozen trace or label requires a new release identifier and regenerated hashes.
 
-## Planned evaluator study
+## Evaluator study harness
 
 After the human gate, the protocol compares:
 
 1. implemented deterministic heuristics;
-2. a planned single-pass model judge without diagnostic tools;
-3. a planned fixed full-diagnostic evaluator;
+2. an implemented single-pass model judge without diagnostic tools;
+3. an implemented fixed all-context judge that runs local diagnostics once before synthesis;
 4. the implemented adaptive tool-routing evaluator.
 
-No paid-model Benchmark v1 study has been run. The comparison design, baseline fairness rules, metrics, group-aware confidence intervals, run-failure handling, and claim policy are specified in the [evaluation protocol](evaluation-protocol.md).
+The label-isolated, resumable execution harness is implemented, but no paid-model Benchmark v1 study has been run. The comparison design, baseline fairness rules, metrics, group-aware confidence intervals, run-failure handling, and claim policy are specified in the [evaluation protocol](evaluation-protocol.md).
 
 ## Scoring outputs
 

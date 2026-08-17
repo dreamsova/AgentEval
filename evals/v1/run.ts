@@ -1,5 +1,4 @@
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 
 import { runBenchmark } from "@/lib/evaluators";
 import {
@@ -15,17 +14,17 @@ export async function runFromConfig(configPath: string) {
 }
 
 function configArgument(argv: readonly string[]) {
-  const index = argv.indexOf("--config");
+  const index = argv.indexOf("--runner-config");
   if (index === -1 || !argv[index + 1]) {
     throw new Error(
-      "Usage: vite-node evals/v1/run.ts --config evals/v1/config.example.json"
+      "Usage: vite-node -c vitest.config.ts evals/v1/cli.ts --runner-config evals/v1/config.example.json"
     );
   }
   return path.resolve(argv[index + 1]);
 }
 
-async function main() {
-  const result = await runFromConfig(configArgument(process.argv.slice(2)));
+export async function runBenchmarkCli(argv: readonly string[]) {
+  const result = await runFromConfig(configArgument(argv));
   process.stdout.write(
     `${JSON.stringify({
       run_id: result.run_id,
@@ -36,14 +35,4 @@ async function main() {
       pending: result.summary.execution.pending
     })}\n`
   );
-}
-
-const executedPath = process.argv[1] ? path.resolve(process.argv[1]) : null;
-if (executedPath === fileURLToPath(import.meta.url)) {
-  main().catch((error) => {
-    process.stderr.write(
-      `${error instanceof Error ? error.stack ?? error.message : String(error)}\n`
-    );
-    process.exitCode = 1;
-  });
 }

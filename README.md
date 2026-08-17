@@ -16,8 +16,9 @@ AgentEval normalizes an AI-agent trace, runs bounded diagnostic checks, and retu
 | Fail-closed research and ops modes | Implemented and covered by automated tests | `research-eval` and `ops-reliability` return an error when the model is unavailable or fails; they do not silently substitute a heuristic report. |
 | Run telemetry | Implemented and covered by automated tests | Reports carry input and version identifiers, requested/returned models, per-call status/latency/token fields, tool/model call counts, wall/model/tool time, fallback policy, and degradation state. |
 | Benchmark v1 data scaffold | Candidate-ready, not scoring-ready | Deterministic checks pass for the committed 84-case scaffold, but every proposed annotation still requires independent human review. No accepted test labels or benchmark performance results exist. |
-| Human annotation and locked test release | Future work | Candidates must be independently annotated, disagreements resolved, integrity checks rerun, and labels isolated before test scoring. |
-| Paid-model comparison study | Future work | The planned four-way evaluator comparison has not been run. No accuracy, latency, token, or cost conclusion is claimed. |
+| Annotation and adjudication workflow | Implemented; human work not performed | The offline workflow generates blinded opaque-ID packets, validates two independent responses, computes agreement, queues disagreements, and freezes only adjudicated labels. No real annotator responses exist yet. |
+| Benchmark execution harness | Implemented and covered by automated tests | Four evaluator configurations share a label-isolated, resumable, bounded-concurrency runner with fail-closed records, manifests, JSONL predictions, summaries, and group-aware intervals. |
+| Paid-model comparison study | Future work | The four-way evaluator experiment has not been run. No accuracy, latency, token, or cost conclusion is claimed. |
 
 ## Evaluation pipeline
 
@@ -81,11 +82,11 @@ Benchmark v1 currently contains:
 
 The generated [data-readiness report](evals/v1/reports/data-readiness.md) records passing deterministic checks for schema validity, counts, candidate balance, trace hashes, evidence anchors, group isolation, and exact/near-duplicate leakage. “Scaffold ready” means ready for human annotation; it does not mean a held-out or human-labeled benchmark exists.
 
-The planned study compares four evaluator configurations without presupposing an outcome:
+The implemented study harness exposes four evaluator configurations without presupposing an outcome:
 
 1. the implemented deterministic heuristic baseline;
-2. a planned single-pass model judge with no diagnostic tools;
-3. a planned fixed full-diagnostic evaluator;
+2. an implemented single-pass model judge with no diagnostic tools;
+3. an implemented fixed all-context judge that runs the local diagnostics once before one synthesis call;
 4. the implemented adaptive tool-routing evaluator.
 
 The [evaluation protocol](docs/evaluation-protocol.md) defines fairness controls, split/freeze rules, metrics, statistical reporting, and allowed claims. [Benchmark v1](docs/benchmark-v1.md) separates current candidate readiness from the human gate.
@@ -114,10 +115,13 @@ Without an API key, only `founder-demo` can return the degraded heuristic fallba
 npm run typecheck
 npm run test
 npm run benchmark
+npm run benchmark:v1
 npm run build
 ```
 
 `npm run benchmark` executes a legacy development-only heuristic ranking check. It is not Benchmark v1 test scoring and must not be reported as held-out performance. The main test suite covers trace normalization/pairing/redaction, evaluation input hashing, evaluator orchestration with mocked model responses, fallback policy, deterministic scoring, and Benchmark v1 schema/integrity/metric utilities.
+
+`npm run benchmark:v1` executes the checked-in development configuration with the deterministic heuristic and writes ignored run artifacts under `evals/v1/results/`. Model-based configurations require an explicit API key and never fall back to heuristics in experimental mode.
 
 ## Safety and limits
 
@@ -139,6 +143,7 @@ The legacy Public Goods Game (PGG) work is treated here only as exploratory moti
 - `components/`: trace workbench, agent-run audit trail, and report UI.
 - `lib/trace/`: canonical schema, adapters, pairing, redaction, and serialization.
 - `lib/agent/`: prompt, diagnostic registry, orchestration, scoring, and telemetry.
-- `evals/v1/`: Benchmark v1 candidate data contract, codebook, metrics, integrity utilities, and readiness reports.
+- `evals/v1/`: Benchmark v1 candidate data contract, annotation workflow, runner configuration, metrics, integrity utilities, and readiness reports.
+- `lib/evaluators/`: heuristic, direct-judge, all-context, and adaptive evaluator adapters plus the batch runner.
 - `tests/`: implementation and Benchmark v1 utility tests.
 - `docs/`: protocol, trace contract, benchmark status, research brief, product notes, and deployment notes.
