@@ -1,5 +1,7 @@
 # Agent Reliability Environment v0 — application brief
 
+[Technical environment documentation](agent-reliability-env.md)
+
 ## 一句话定位
 
 Agent Reliability Environment v0 是一个小型、确定性的交互式 agent 环境：agent 通过工具改变受控状态，环境用可审计的 verifier 计算终局 reward，并把 rollout 转成 AgentEval 可读取的结构化 trace。

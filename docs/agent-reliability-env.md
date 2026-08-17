@@ -61,12 +61,14 @@ If an episode reaches `max_steps` without `submit`, it can still receive up to `
 
 ```bash
 npm run env:demo
-npm run test -- tests/agent-reliability-env.test.ts tests/agent-reliability-rollout.test.ts
+npm run test -- tests/agent-reliability-env.test.ts tests/agent-reliability-rollout.test.ts tests/agent-reliability-adversarial.test.ts
 ```
 
 The CLI runs all five policies on three tasks and prints JSON containing step counts, reward components, actual/claimed status, and test freshness. `rolloutToNormalizedTrace()` converts any rollout into the same versioned, provenance-aware trace representation used by AgentEval.
 
 Completed rollout records are recursively frozen before being returned so task, action, and verifier evidence cannot be changed after reward calculation.
+
+Implementation: [environment](../envs/agent-reliability/environment.ts), [verifier](../envs/agent-reliability/verifier.ts), [scripted policies](../envs/agent-reliability/policies.ts), [trace adapter](../envs/agent-reliability/trace-adapter.ts), and [adversarial tests](../tests/agent-reliability-adversarial.test.ts).
 
 ## Scope boundary and next experiment
 

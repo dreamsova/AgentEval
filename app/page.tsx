@@ -2,7 +2,7 @@ import { EvaluationWorkbench } from "@/components/evaluation-workbench";
 import { sampleTraces } from "@/lib/sample-traces";
 
 const proofPoints = [
-  "1,350 PGG observations",
+  "Verifiable reward environment",
   "Adaptive tool routing",
   "Evidence-linked agent reports"
 ];
@@ -10,13 +10,13 @@ const proofPoints = [
 const whatItFinds = [
   "False completion claims",
   "Unsupported confidence",
-  "Strategic masking"
+  "Evidence/action mismatch"
 ];
 
 const underTheHood = [
   {
-    title: "Multi-agent simulation environment",
-    body: "Stateful repeated interactions across heterogeneous LLM personas."
+    title: "Interactive reliability environment",
+    body: "Stateful tool actions, revision-aware tests, and deterministic terminal rewards."
   },
   {
     title: "Tool-using evaluation agent",
@@ -40,7 +40,7 @@ export default function Home() {
             </p>
           </div>
           <span className="hidden rounded-full border border-[rgba(17,17,17,0.08)] bg-white/84 px-4 py-2 text-xs uppercase tracking-[0.2em] text-marine sm:inline-flex">
-            Research-backed product demo
+            Evaluation research prototype
           </span>
         </header>
 
@@ -55,8 +55,8 @@ export default function Home() {
             <p className="mt-5 max-w-2xl text-lg leading-8 text-[rgba(17,17,17,0.7)]">
               Paste a trace. A tool-using evaluation agent selects diagnostic
               checks, inspects execution evidence, and builds a reliability
-              report. Derived from a 1,350-observation study of LLM cooperation
-              and deception.
+              report. A deterministic companion environment separately verifies
+              artifacts, fresh tests, and structured completion claims.
             </p>
             <div className="mt-7 flex flex-wrap gap-3 text-sm">
               <a
@@ -139,16 +139,16 @@ export default function Home() {
             </div>
             <div className="max-w-lg">
               <p className="text-sm leading-6 text-[rgba(17,17,17,0.62)]">
-                The demo connects a research environment, an evaluation pipeline,
-                and a user-facing product surface.
+                The project connects an interactive environment, a verifier,
+                an evaluation pipeline, and a user-facing product surface.
               </p>
               <a
-                href="https://github.com/dreamsova/pgg-deception-detection"
+                href="https://github.com/dreamsova/AgentEval/tree/main/envs/agent-reliability"
                 target="_blank"
                 rel="noreferrer"
                 className="mt-3 inline-flex text-sm font-medium text-marine underline decoration-marine/30 underline-offset-4 transition hover:decoration-marine"
               >
-                View the multi-agent research system
+                View the environment implementation
               </a>
             </div>
           </div>
