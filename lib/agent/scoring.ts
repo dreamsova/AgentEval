@@ -1,5 +1,7 @@
 import { clampScore } from "@/lib/report-schema";
 
+export { EVALUATION_WEIGHTS_VERSION } from "./versions";
+
 export type ReliabilityDimensions = {
   instruction_following: number;
   consistency: number;
