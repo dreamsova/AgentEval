@@ -1,0 +1,267 @@
+{
+  "schema_version": "1.0.0",
+  "report_version": "1.0.0",
+  "status": {
+    "scaffold_ready": true,
+    "benchmark_scoring_ready": false,
+    "statement": "The deterministic data scaffold is ready for independent human annotation; it is not approved for benchmark scoring or performance claims."
+  },
+  "datasets": [
+    {
+      "dataset_id": "agenteval-v1-dev",
+      "split": "dev",
+      "total": 16,
+      "reliable": 8,
+      "unreliable": 8,
+      "groups": 12,
+      "counterfactual_pairs": 4,
+      "style_pairs": 0,
+      "by_primary_failure": {
+        "false_completion": 3,
+        "partial_completion_overclaim": 1,
+        "tool_result_contradiction": 1,
+        "unsupported_claim": 3
+      },
+      "by_domain": {
+        "analytics": 4,
+        "business_operations": 4,
+        "content_operations": 2,
+        "general": 2,
+        "software_operations": 4
+      },
+      "by_task_type": {
+        "artifact_creation": 4,
+        "artifact_mutation": 1,
+        "external_action": 3,
+        "fact_retrieval": 4,
+        "status_verification": 3,
+        "structured_response": 1
+      },
+      "by_style_tag": {
+        "artifact_first": 2,
+        "blocker_disclosure": 2,
+        "citation_requested": 1,
+        "confident": 9,
+        "conversational": 5,
+        "evasive_follow_up": 1,
+        "follow_up_challenge": 3,
+        "polished": 1,
+        "precise_language": 2,
+        "tool_failure": 3,
+        "tool_grounded": 6,
+        "tool_omitted": 4,
+        "uncertainty_suppressed": 2
+      },
+      "by_review_status": {
+        "needs_human_review": 16
+      },
+      "input_sha256": "a3f3b90147f31167cbf465aa4e1fbea4789d6a0f9558fea1d279aa81ae1a92fd",
+      "label_sha256": "d6e69914506f2a2351a16ee4b20f40085dd2d505c3ef32ac11454792563c3f0d"
+    },
+    {
+      "dataset_id": "agenteval-v1-regression",
+      "split": "regression",
+      "total": 8,
+      "reliable": 2,
+      "unreliable": 6,
+      "groups": 6,
+      "counterfactual_pairs": 2,
+      "style_pairs": 0,
+      "by_primary_failure": {
+        "artifact_provenance_mismatch": 1,
+        "false_completion": 2,
+        "masking_pattern": 1,
+        "tool_result_contradiction": 1,
+        "unsupported_claim": 1
+      },
+      "by_domain": {
+        "business_operations": 1,
+        "publishing": 3,
+        "software_operations": 4
+      },
+      "by_task_type": {
+        "artifact_mutation": 2,
+        "external_action": 2,
+        "fact_retrieval": 1,
+        "source_verification": 3
+      },
+      "by_style_tag": {
+        "artifact_first": 1,
+        "citation_requested": 3,
+        "confident": 1,
+        "conversational": 3,
+        "evasive_follow_up": 4,
+        "follow_up_challenge": 1,
+        "polished": 3,
+        "precise_language": 1,
+        "tool_failure": 1,
+        "tool_grounded": 3,
+        "tool_omitted": 2,
+        "uncertainty_suppressed": 1
+      },
+      "by_review_status": {
+        "needs_human_review": 8
+      },
+      "input_sha256": "b2ae840f02d8efabf3d901108b5137d22d0bbd658dd82865f1d6ceb9dcee7bcb",
+      "label_sha256": "77cbd33065a81db5370d8caa0249ddbd56690dafa7d0703bfa85511a1fd45e74"
+    },
+    {
+      "dataset_id": "agenteval-v1-test-candidates",
+      "split": "test",
+      "total": 60,
+      "reliable": 24,
+      "unreliable": 36,
+      "groups": 30,
+      "counterfactual_pairs": 30,
+      "style_pairs": 6,
+      "by_primary_failure": {
+        "artifact_provenance_mismatch": 6,
+        "false_completion": 6,
+        "masking_pattern": 6,
+        "partial_completion_overclaim": 6,
+        "tool_result_contradiction": 6,
+        "unsupported_claim": 6
+      },
+      "by_domain": {
+        "analytics": 10,
+        "business_operations": 10,
+        "content_operations": 10,
+        "general": 10,
+        "publishing": 10,
+        "software_operations": 10
+      },
+      "by_task_type": {
+        "artifact_creation": 10,
+        "external_action": 20,
+        "fact_retrieval": 10,
+        "source_verification": 10,
+        "status_verification": 10
+      },
+      "by_style_tag": {
+        "artifact_first": 5,
+        "blocker_disclosure": 4,
+        "citation_requested": 10,
+        "confident": 18,
+        "conversational": 35,
+        "evasive_follow_up": 12,
+        "follow_up_challenge": 6,
+        "polished": 11,
+        "precise_language": 11,
+        "tool_failure": 10,
+        "tool_grounded": 32,
+        "tool_omitted": 18,
+        "uncertainty_suppressed": 6
+      },
+      "by_review_status": {
+        "needs_human_review": 60
+      },
+      "input_sha256": "d693a1c5af160379a2e4d6480c4dffd4ab118c7c9d49a1378e74c433a64d9e53",
+      "label_sha256": "385490fce037b64fffbe520cc65e721256ce4880ccbc43d1072782797a26e401"
+    }
+  ],
+  "totals": {
+    "dev_regression_items": 24,
+    "test_candidate_items": 60,
+    "all_items": 84
+  },
+  "integrity": {
+    "checks": [
+      {
+        "id": "dev_regression_count",
+        "passed": true,
+        "detail": "Expected 24 dev/regression items; found 24."
+      },
+      {
+        "id": "test_candidate_count",
+        "passed": true,
+        "detail": "Expected 60 test candidates; found 60."
+      },
+      {
+        "id": "test_reliability_balance",
+        "passed": true,
+        "detail": "Expected 24 reliable and 36 unreliable test candidates; found 24/36."
+      },
+      {
+        "id": "test_primary_failure_balance",
+        "passed": true,
+        "detail": "Each of the six primary failure classes must have exactly six test candidates."
+      },
+      {
+        "id": "test_domain_balance",
+        "passed": true,
+        "detail": "Each of the six domains must have exactly ten test candidates."
+      },
+      {
+        "id": "test_style_coverage",
+        "passed": true,
+        "detail": "Every v1 style tag must occur in the test-candidate scaffold."
+      },
+      {
+        "id": "combined_task_type_coverage",
+        "passed": true,
+        "detail": "Every v1 task type must occur in the complete scaffold."
+      },
+      {
+        "id": "test_pair_structure",
+        "passed": true,
+        "detail": "Expected 30 counterfactual pairs and 6 style pairs; found 30/6."
+      },
+      {
+        "id": "candidate_visibility",
+        "passed": true,
+        "detail": "All repository-visible test candidates must be development-only and not unseen."
+      },
+      {
+        "id": "review_status",
+        "passed": true,
+        "detail": "Every AI-authored or AI-reviewed proposed label must require human review."
+      },
+      {
+        "id": "input_label_coverage",
+        "passed": true,
+        "detail": "Input/label coverage issues: 0."
+      },
+      {
+        "id": "trace_hashes",
+        "passed": true,
+        "detail": "Trace hash issues: 0."
+      },
+      {
+        "id": "evidence_anchors",
+        "passed": true,
+        "detail": "Evidence anchor issues: 0."
+      },
+      {
+        "id": "group_isolation",
+        "passed": true,
+        "detail": "Grouping issues: 0."
+      },
+      {
+        "id": "exact_duplicates",
+        "passed": true,
+        "detail": "Exact duplicate traces outside intentional pairing: 0."
+      },
+      {
+        "id": "cross_split_leakage",
+        "passed": true,
+        "detail": "Cross-split leakage issues: 0."
+      },
+      {
+        "id": "cross_split_near_duplicates",
+        "passed": true,
+        "detail": "Cross-split near duplicates at threshold 0.82: 0."
+      }
+    ],
+    "exact_duplicate_issues": [],
+    "cross_split_leakage_issues": [],
+    "cross_split_near_duplicates": [],
+    "near_duplicate_threshold": 0.82,
+    "corpus_sha256": "4e4b2fbcacc632ca622eeab94ca3df18bbd4732d2ea1e2d1fbd5bb2f89a43433"
+  },
+  "human_gate": [
+    "Independently annotate every candidate without access to the AI-proposed label file.",
+    "Use a second independent pass and resolve disagreements under a recorded protocol.",
+    "Recompute evidence anchors, coverage, leakage, and hashes after any annotation or trace change.",
+    "Lock the accepted test inputs and move accepted test labels to evaluator-only access before any benchmark run."
+  ]
+}
