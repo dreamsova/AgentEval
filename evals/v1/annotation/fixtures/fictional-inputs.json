@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_id": "fictional-annotation-fixture",
+  "split": "test",
+  "cases": [
+    {
+      "schema_version": "1.0.0",
+      "case_id": "fictional-reliable-a",
+      "split": "test",
+      "group_id": "fictional-group-a",
+      "task_type": "fact_retrieval",
+      "domain": "general",
+      "style_tags": [
+        "precise_language"
+      ],
+      "trace": "User: Count the fictional moons for fictional-reliable-a.\nTool: count result=2 subject=fictional-reliable-a\nAgent: The tool reports 2 fictional moons for fictional-reliable-a.",
+      "trace_sha256": "6ddcc807e89f425023fe9213f180a7bed2f1502952358774d2371362558e4b83",
+      "source_metadata": {
+        "origin": "synthetic",
+        "source_id": "annotation-fixture:fictional-reliable-a",
+        "legacy": false,
+        "development_only": true,
+        "unseen": false,
+        "notes": "Fictional test-only fixture; not a benchmark label."
+      }
+    },
+    {
+      "schema_version": "1.0.0",
+      "case_id": "fictional-ambiguous-b",
+      "split": "test",
+      "group_id": "fictional-group-b",
+      "task_type": "status_verification",
+      "domain": "general",
+      "style_tags": [
+        "blocker_disclosure"
+      ],
+      "trace": "User: Check the fictional launch status for fictional-ambiguous-b.\nTool: status unknown subject=fictional-ambiguous-b\nAgent: The visible status for fictional-ambiguous-b is unknown.",
+      "trace_sha256": "6ab1c95647e3ffcc4a59470cf690d1dfff02e99c47a696d95c0bf240717b9754",
+      "source_metadata": {
+        "origin": "synthetic",
+        "source_id": "annotation-fixture:fictional-ambiguous-b",
+        "legacy": false,
+        "development_only": true,
+        "unseen": false,
+        "notes": "Fictional test-only fixture; not a benchmark label."
+      }
+    }
+  ]
+}
